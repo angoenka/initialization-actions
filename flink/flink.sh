@@ -82,7 +82,7 @@ function install_flink_snapshot() {
   local work_dir
   work_dir="$(mktemp -d)"
   local flink_url
-  flink_url="$(/usr/share/google/get_metadata_value "attributes/${FLINK_SNAPSHOT_URL_METADATA_KEY}")"
+  flink_url="https://www-us.apache.org/dist/flink/flink-1.9.2/flink-1.9.2-bin-scala_2.11.tgz"
   local flink_local="${work_dir}/flink.tgz"
   local flink_toplevel_pattern="${work_dir}/flink-*"
 
@@ -195,13 +195,8 @@ function main() {
   local role
   role="$(/usr/share/google/get_metadata_value attributes/dataproc-role)"
 
-  # check if a flink snapshot URL is specified
-  if /usr/share/google/get_metadata_value "attributes/${FLINK_SNAPSHOT_URL_METADATA_KEY}"; then
-    install_flink_snapshot || err "Unable to install Flink"
-  else
-    update_apt_get || err "Unable to update apt-get"
-    install_apt_get flink || err "Unable to install flink"
-  fi
+  install_flink_snapshot || err "Unable to install Flink"
+  
   configure_flink || err "Flink configuration failed"
   if [[ "${role}" == 'Master' ]]; then
     start_flink_master || err "Unable to start Flink master"
